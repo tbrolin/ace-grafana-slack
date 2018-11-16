@@ -1,0 +1,24 @@
+{
+  "name": "@atex/ace-starterkit-grafana-slack",
+  "version": "0.1.0",
+  "description": "Set up a working grafana slack integration in ace-starterkit",
+  "main": "index.js",
+  "bin": {
+    "ace-starterkit-grafana-slack": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "docker-compose": "^0.9.1",
+    "minimist": "^1.2.0",
+    "ngrok": "^3.1.0",
+    "node-docker-api": "^1.1.22",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "wait-on": "^3.2.0"
+  },
+  "devDependencies": {}
+}
