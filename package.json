@@ -1,6 +1,6 @@
 {
   "name": "@atex/ace-starterkit-grafana-slack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Set up a working grafana slack integration in ace-starterkit",
   "repository": "github:tbrolin/ace-grafana-slack.git",
   "author": "ace-development",
