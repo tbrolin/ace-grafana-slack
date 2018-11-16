@@ -1,7 +1,7 @@
 # ace-grafana-slack
 
 A utility to quickly add the ability to get slack notifications from
-Grafana alerts in *ace-starterkit*. To be able to push images to slack
+Grafana alerts in **ace-starterkit**. To be able to push images to slack
 those images has to be publicly available on the Internet. This utility
 can set up a tunnel (use `--tunnel` option) using ngrok to acheive that.
 
