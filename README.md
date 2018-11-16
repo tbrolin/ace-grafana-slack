@@ -8,8 +8,8 @@ can set up a tunnel (use `--tunnel` option) using ngrok to acheive that.
 # Install
 
 ```bash
-$ npm install @atex/ace-slack-grafana -g    # Install as global
-$ ace-starterkit-grafana-slack --help       # command is now available
+$ npm install @atex/ace-starterkit-grafana-slack -g    # Install as global
+$ ace-starterkit-grafana-slack --help                  # command is now available
 ```
 
 # Developer setup
@@ -26,5 +26,5 @@ Changes made to the code will now take effect immediately.
 # Uninstalling
 
 ```bash
-$ npm uninstall -g
+$ npm uninstall -g          # Or, npm uninstall ace-starterkit-grafana-slack -g
 ```
