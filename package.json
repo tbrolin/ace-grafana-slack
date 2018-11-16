@@ -20,5 +20,7 @@
     "request-promise-native": "^1.0.5",
     "wait-on": "^3.2.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "release-it": "^7.6.3"
+  }
 }
