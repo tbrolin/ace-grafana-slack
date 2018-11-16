@@ -5,6 +5,8 @@ Grafana alerts in **ace-starterkit**. To be able to push images to slack
 those images has to be publicly available on the Internet. This utility
 can set up a tunnel (use `--tunnel` option) using ngrok to acheive that.
 
+[How to setup a simple slack workspace web-hook](https://api.slack.com/tutorials/slack-apps-hello-world)
+
 # Install
 
 ```bash
