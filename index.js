@@ -6,6 +6,8 @@ const ngrok =  require ('ngrok');
 const dc = require ('docker-compose');
 const request = require ('request-promise-native');
 const waitOn = require ('wait-on');
+const fs = require ('fs');
+const path = require ('path');
 
 if (argv.help) {
   help ();
@@ -13,16 +15,29 @@ if (argv.help) {
 }
 
 if (!argv._[0]) {
-  console.error ('\nERROR: No WebHookURL provided.');
-  help ();
+  console.error (`
+
+  ERROR: No WebHookURL provided.
+
+  `);
   process.exit (1);
 }
 
 const docker = new Docker ({ socketPath: '/var/run/docker.sock' });
-const skHome = argv['sk-home'] || process.env['ACE_STARTERKIT_HOME'] || '.';
+const skHome = path.join(__dirname, argv['sk-home'] || process.env['ACE_STARTERKIT_HOME'] || '.');
+if (!fs.existsSync(path.join(skHome, 'docker-compose.yml'))) {
+  console.error (`
+
+  ERROR: No docker-compose.yml found in ${skHome}
+         --sk-home must resolve to the root directory of ace-starterkit
+
+  `);
+  process.exit (1);
+}
+
 const skGrafanaContainer = argv['sk-grafana-container'] || 'ace-grafana';
 const skContentServiceContainer = argv['sk-content-service-container'] || 'ace-content-service';
-const gfServerRootUrl = argv['gf-server-root-url'] || 'http://ace.local:3000';
+const gfServerRootUrl = argv['gf-server-root-url'] || 'http://localhost:3000';
 const ngrokRegion = argv['ngrok-region'] || 'eu';
 const ngrokAddr = argv['ngrok-addr'] || 3000;
 
@@ -41,26 +56,33 @@ if (argv.verbose) {
 }
 
 function help () {
-  console.log ();
-  console.log ('  Usage: ace-starterkit-grafana-slack [options] <WebHookURL>');
-  console.log ();
-  console.log ('  Set up a grafana notification channel to Slack in an ace-starterkit set-up. It is possible to setup a tunnel between the');
-  console.log ('  local grafana application and a public ip address through ngrok if images cannot be provided in another publicly way.');
-  console.log ();
-  console.log (' Arguments:');
-  console.log ();
-  console.log ('   WebHookURL                        A Slack workspace webhook URL (required)');
-  console.log ();
-  console.log (' Options:');
-  console.log ('');
-  console.log ('   --tunnel                          Tunnel local grafana to an adress on the Internet.');
-  console.log ('   --verbose                         Verbose output.');
-  console.log ('   --gf-server-root-url              The url to the grafana application (if --tunnel is set this value will be ignored.  (http://localhost:3000)');
-  console.log ('   --sk-home                         Path to ace-starterkit directory overrides env ACE_STARTERKIT_HOME.  (.)');
-  console.log ('   --sk-grafana-container            Grafana docker container name.  (ace-grafana)');
-  console.log ('   --sk-content-service-container    Content Service docker container name.  (ace-content-service)');
-  console.log ('   --ngrok-region                    The region for ngrok to use.  [ us | eu | ap | au ]  (eu)');
-  console.log ('   --ngrok-addr                      ngrok will use this local port number or network address to forward traffic.  (3000)');
+  console.log (`
+  Usage: ace-starterkit-grafana-slack [options] <WebHookURL>
+
+    Set up a grafana notification channel to Slack in an ace-starterkit set-up. It is possible
+    to setup a tunnel between the local grafana application and a public ip address through
+    ngrok if images are not provided in another publicly way.
+
+    The path value of the sk-home option must point to the ace-starterkit root directory, if
+    not provided, it will use the path set by the environment variable ACE_STARTERKIT_HOME if it
+    exists, otherwise it will assume the current directory. 
+
+  Arguments:
+
+    WebHookURL                        A Slack workspace webhook URL (required)
+
+  Options:
+
+    --gf-server-root-url ............ The url to the grafana application (if --tunnel is set this value will be ignored).  (http://localhost:3000)
+    --ngrok-region .................. The region for ngrok to use.  [ us | eu | ap | au ]  (eu)
+    --ngrok-addr .................... ngrok will use this local port number or network address to forward traffic.  (3000)
+    --sk-content-service-container .. Content Service docker container name.  (ace-content-service)
+    --sk-grafana-container .......... Grafana docker container name.  (ace-grafana)
+    --sk-home ....................... Path to ace-starterkit directory overrides env ACE_STARTERKIT_HOME.  (.)
+    --tunnel ........................ Tunnel local grafana to an adress on the Internet.
+    --verbose ....................... Verbose output.
+
+  `);
 }
 
 docker.container.list ()
@@ -106,7 +128,7 @@ docker.container.list ()
     if (argv.tunnel) {
       process.env['GF_DEFAULT_APP_MODE'] = 'development';
       process.env['GF_EXTERNAL_IMAGE_STORAGE_PROVIDER'] = 'local'; 
-      console.log ('Public URL: ' + rootUrl);
+      console.error ('Public URL: ' + rootUrl);
     }
     argv.verbose && console.error ('Starting ' + skGrafanaContainer);
     argv.verbose && console.error (process.env);
@@ -116,6 +138,7 @@ docker.container.list ()
     // Wait for grafana
     argv.verbose && console.error ('Waiting for Grafana to come up.')
     return waitOn ({
+      timeout: 10000,
       resources: ['http://admin:admin@localhost:3000/api/alert-notifications'],
       auth: {
         user: 'admin',
@@ -143,7 +166,8 @@ docker.container.list ()
   })
   .then (() => {
     if (argv.tunnel) {
-      console.error ('A tunnel has been set-up, exiting this process will terminate that tunnel.')
+      console.error ('A notification channel to Slack for Grafana is created.');
+      console.error ('A tunnel has been set-up, exiting this process will terminate that tunnel.');
       console.error ('(Ctrl-C to Exit)');
     } else {
       console.error ('Success. Created notification channel to Slack for Grafana.');
