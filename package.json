@@ -17,13 +17,10 @@
   "dependencies": {
     "docker-compose": "^0.9.1",
     "minimist": "^1.2.0",
-    "ngrok": "^3.1.0",
+    "ngrok": "^4.3.3",
     "node-docker-api": "^1.1.22",
-    "request": "^2.88.0",
     "request-promise-native": "^1.0.5",
     "wait-on": "^3.2.0"
   },
-  "devDependencies": {
-    "release-it": "^7.6.3"
-  }
+  "devDependencies": {}
 }
